@@ -13,6 +13,7 @@ namespace NthRootLogic
         /// The method of searching for a root of the nth power for a real number
         /// with an indication of the accuracy
         /// </summary>
+        /// <exception cref="ArgumentException"></exception>
         /// <param name="number">Number</param>
         /// <param name="root">Exponent</param>
         /// <param name="accuracy">Accuracy</param>
@@ -53,7 +54,7 @@ namespace NthRootLogic
                 throw new ArgumentException($"It is impossible to extract a {nameof(root)} of even degree from a negative  {nameof(number)}");
             }
 
-            if (accuracy < 0)
+            if (accuracy < 0 && accuracy>1)
             {
                 throw new ArgumentException($"{nameof(accuracy)} can not be less than 0");
             }
