@@ -9,54 +9,26 @@ namespace GCDLogic
 {
     public static class GcdClass
     {
-        #region Public methods
-        /// <summary>
-        /// Finds the execution time of the method for a given array
-        /// </summary>
-        /// <param name="array">Source array</param>
-        /// <returns>Execution time as a string</returns>
-        public static string ExecutionTimeForFindGcd(params int[] array)
-        {
-            var sw = new Stopwatch();
-
-            sw.Start();
-
-            FindGcd(array);
-
-            sw.Stop();
-
-            return sw.ElapsedMilliseconds.ToString();
-        }
-
-        /// <summary>
-        /// Finds the execution time of the binary method for a given array
-        /// </summary>
-        /// <param name="array">Source array</param>
-        /// <returns>Execution time as a string</returns>
-        public static string ExecutionTimeForBinaryFindGcd(params int[] array)
-        {
-            var sw = new Stopwatch();
-
-            sw.Start();
-
-            BinaryFindGcd(array);
-
-            sw.Stop();
-
-            return sw.ElapsedMilliseconds.ToString();
-        }
-
         /// <summary>
         /// Finds a GCD by the euclidean algorithm for two numbers
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns>GCD</returns>
-        public static int FindGcd(int a, int b)
+        public static (int,long) FindGcd(int a, int b,Func<int,int,int> gcdAlgorithm)
         {
             Validate(a, b);
 
-            return EuclideanAlgorithm(a, b);
+            var sw = new Stopwatch();
+
+            sw.Start();
+
+            int gcd = gcdAlgorithm(a,b);
+
+            sw.Stop();
+
+            return  (gcd,sw.ElapsedMilliseconds);
+
         }
 
         /// <summary>
@@ -66,11 +38,19 @@ namespace GCDLogic
         /// <param name="b"></param>
         /// <param name="c"></param>
         /// <returns>GCD</returns>
-        public static int FindGcd(int a, int b, int c)
+        public static (int,long) FindGcd(int a, int b, int c, Func<int, int, int> gcdAlgorithm)
         {
             Validate(a, b, c);
 
-            return EuclideanAlgorithm(EuclideanAlgorithm(a, b), c);
+            var sw = new Stopwatch();
+
+            sw.Start();
+
+            int gcd = gcdAlgorithm(gcdAlgorithm(a, b), c);
+
+            sw.Stop();
+
+            return (gcd, sw.ElapsedMilliseconds);
         }
 
         /// <summary>
@@ -78,9 +58,13 @@ namespace GCDLogic
         /// </summary>
         /// <param name="array">Source array</param>
         /// <returns>GCD</returns>
-        public static int FindGcd(params int[] array)
+        public static (int,long) FindGcd(Func<int, int, int> gcdAlgorithm, params int[] array)
         {
             Validate(array);
+
+            var sw = new Stopwatch();
+
+            sw.Start();
 
             List<int> list = new List<int>();
 
@@ -90,67 +74,16 @@ namespace GCDLogic
 
                 for (int i = 0; i < array.Length - 1; i++)
                 {
-                    list.Add(EuclideanAlgorithm(array[i], array[i + 1]));
+                    list.Add(gcdAlgorithm(array[i], array[i + 1]));
                 }
 
                 array = list.ToArray();
             }
 
-            return list[0];
+            sw.Stop();
+
+            return (list[0],sw.ElapsedMilliseconds);
         }
-
-        /// <summary>
-        /// Finds a GCD by the binary euclidean algorithm for two numbers
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns>GCD</returns>
-        public static int BinaryFindGcd(int a, int b)
-        {
-            Validate(a, b);
-
-            return BinaryEuclideanAlgorithm(a, b);
-        }
-
-        /// <summary>
-        /// Finds a GCD by the binary euclidean algorithm for three numbers
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns>GCD</returns>
-        public static int BinaryFindGcd(int a, int b, int c)
-        {
-            Validate(a, b, c);
-
-            return BinaryEuclideanAlgorithm(BinaryEuclideanAlgorithm(a, b), c);
-        }
-
-        /// <summary>
-        /// Finds a GCD by the binary euclidean algorithm for more than three numbers
-        /// </summary>
-        /// <param name="array">Source array</param>
-        /// <returns>GCD</returns>
-        public static int BinaryFindGcd(params int[] array)
-        {
-            Validate(array);
-
-            List<int> list = new List<int>();
-
-            while (list.Count != 1)
-            {
-                list.Clear();
-
-                for (int i = 0; i < array.Length - 1; i++)
-                {
-                    list.Add(BinaryEuclideanAlgorithm(array[i], array[i + 1]));
-                }
-
-                array = list.ToArray();
-            }
-
-            return list[0];
-        } 
-        #endregion
 
         #region Private methods
         /// <summary>
